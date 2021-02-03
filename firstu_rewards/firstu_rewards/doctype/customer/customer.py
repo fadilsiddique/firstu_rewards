@@ -10,10 +10,10 @@ from frappe.core.doctype.user.user import generate_keys
 class Customer(Document):
 	def before_save(self):
 
-		# creating email-id for user
+		# creating a random email-id for customer by using first name and last name
 		email = self.customer.lower() + "_" + self.last_name.lower() + "@" + "gmail.com"
 		if not self.user_id:
-			user_doc = frappe.get_doc({
+			user_doc = frappe.get_doc({  #	a user is created is created for that customer using the email
 				'doctype': 'User',
 				'email': email,
 				'first_name': self.customer,

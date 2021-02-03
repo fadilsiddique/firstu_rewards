@@ -16,17 +16,17 @@ class FuelPayment(Document):
 		fuel_type = self.customer_doc.fuel_type
 		membership_type = self.customer_doc.membership_type
 
-		if fuel_type == "Petrol":
+		if fuel_type == "Petrol": # if fuel type is petrol, petrol price is fetched from fuel price
 			fuel_today = fuel_doc.petrol
-			if membership_type == "Status":
+			if membership_type == "Status": # if membership type is status/privelege, fuel price is fetched according to membership
 				fuel = fuel_doc.petrol_status
 			elif membership_type == "Privilege":
 				fuel = fuel_doc.petrol_privilege
 			
 
-		elif fuel_type == "Diesel":
+		elif fuel_type == "Diesel": # if fuel type is petrol, petrol price is fetched from fuel price
 			fuel_today = fuel_doc.diesel
-			if membership_type == "Status":
+			if membership_type == "Status": # if membership type is status/privelege, fuel price is fetched according to membership
 				fuel = fuel_doc.diesel_status
 			elif membership_type == "Privilege":
 				fuel = fuel_doc.diesel_privilege
@@ -40,7 +40,7 @@ class FuelPayment(Document):
 		cashback = int(fuel_today) * int(litre_filled) - int(fuel) * int(litre_filled)
 		self.cashback = cashback
 		self.cashback_doc = frappe.get_doc({
-			'doctype': 'Cashback Ledger',
+			'doctype': 'Cashback Ledger',  # creates a cashback ledger against the customer
 			'customer': self.customer,
 			'amount': cashback,
 			'fuel_payment': self.name,
@@ -64,7 +64,7 @@ class FuelPayment(Document):
 			self.customer_doc.total_trophies_collected = int(self.customer_doc.total_trophies_collected) + int(trophy_doc.trophies)
 			self.customer_doc.refuel_left =  int(trophy_doc.frequency)
 			trophy_doc = frappe.get_doc({
-				'doctype': 'Trophy Ledger',
+				'doctype': 'Trophy Ledger',  #creates a trophy ledger against the customer
 				'trophy_count': trophy_doc.trophies,
 				'creditdebit': "Credit",
 				'note': 'Trophy Earned from refuel',
