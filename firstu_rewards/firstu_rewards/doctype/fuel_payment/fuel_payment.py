@@ -11,6 +11,8 @@ class FuelPayment(Document):
 		self.customer_doc = frappe.get_doc('Customer', self.customer)
 		fuel_doc = frappe.get_doc('Fuel Price')
 		
+		# validate fuel type and membership type and assign fuel price according to membership type. Fuel price are updated on change of fuel prices.
+
 		fuel_type = self.customer_doc.fuel_type
 		membership_type = self.customer_doc.membership_type
 
@@ -28,6 +30,8 @@ class FuelPayment(Document):
 				fuel = fuel_doc.diesel_status
 			elif membership_type == "Privilege":
 				fuel = fuel_doc.diesel_privilege
+		
+		# calculate liters filled and cashback amount and create cashback ledger document against customer.
 
 		litre_filled = round(int(self.amount) / int(fuel_today), 2)
 		self.litres = litre_filled
@@ -47,9 +51,14 @@ class FuelPayment(Document):
 
 	def on_submit(self):
 
+		# calculates cashback balance and trophies collected by customer.
+		# Trophies are added upon fuel payment frequency which is predefined in trophy settings.
+		# Refuel left field indicates the refuel left to earn next trophies.
+
 		trophy_doc = frappe.get_doc('Trophy Settings')
 
 		self.customer_doc.cashback_balance = int(self.customer_doc.cashback_balance) + int(self.cashback)
+		self.customer_doc.lifetime = int(self.customer_doc.lifetime) + int(self.cashback)
 
 		if int(self.customer_doc.refuel_left) == 0:
 			self.customer_doc.total_trophies_collected = int(self.customer_doc.total_trophies_collected) + int(trophy_doc.trophies)

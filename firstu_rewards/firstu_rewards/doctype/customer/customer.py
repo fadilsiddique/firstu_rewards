@@ -9,6 +9,8 @@ from frappe.core.doctype.user.user import generate_keys
 
 class Customer(Document):
 	def before_save(self):
+
+		# creating email-id for user
 		email = self.customer.lower() + "_" + self.last_name.lower() + "@" + "gmail.com"
 		if not self.user_id:
 			user_doc = frappe.get_doc({
@@ -19,7 +21,7 @@ class Customer(Document):
 				'role_profile_name': 'FirstU Customer'
 				})
 			user_doc.insert()
-
+			# generate user_id,api_secret and api key for user
 			self.user_id = user_doc.email
 			self.api_secret = generate_keys(self.user_id)['api_secret']
 			self.api_key = frappe.db.get_value('User', self.user_id, 'api_key')
